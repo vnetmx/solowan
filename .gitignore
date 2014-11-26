@@ -1,0 +1,52 @@
+<<<<<<< HEAD
+.cproject
+.project
+.settings
+.deps
+.dirstamp
+.project
+Makefile
+Makefile.in
+*.o
+
+/aclocal.m4
+/autom4te.cache/
+/build-aux/
+/config.*
+/configure
+/stamp-h1
+
+# Object files
+*.o
+*.ko
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Others
+*.*~
+
+# VNX rootfilesystems
+filesystems/vnx_rootfs*
+filesystems/vnx_rootfs*/
+
+# non public folders
+bin/
+doc/
+images/
+others/
+wireshark/
+vm-solowan/
+scenarios/
