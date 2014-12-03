@@ -54,11 +54,12 @@
 // Proceedings of the conference on Applications, Technologies, Architectures, and Protocols for Computer Communication.
 // READ THAT ARTICLE BEFORE TRYING TO UNDERSTAND THIS CODE
 
-// Fingerpint store has a size FPS_FACTOR greater than the maximum number of fingerprints (FP) stored.
+// Fingerpint store has a size at most FPS_FACTOR greater than the maximum number of fingerprints (FP) stored.
+// The actual number may be defined in the configuration file, the maximum is FPS_FACTOR.
 // A hash table should not be too crowded
-#define FPS_FACTOR 4
+#define MAX_FPS_FACTOR 4
 
-// We calculate MAX_FP_PER_PKT Rabin fingerprints in each packet
+// We calculate at most MAX_FP_PER_PKT Rabin fingerprints in each packet. The actual number may be defined in the configuration file, the maximum is MAX_FP_PER_PKT.
 // At present, the fingerprint selection algorithm is very simple: 
 // The first MAX_FP_PER_PKT fingerprints which have the lowest GAMMA (see below) bits equal to 0 are chosen
 // This algirithm is very quick, but performs poorly when there are too many repeated bytes on the packet, as then there will be many identical consecuive fingerprints
@@ -179,6 +180,9 @@ uint64_t ntoh64(unsigned char *p) ;
 inline unsigned int MAX_PKT_SIZE(void);
 inline unsigned int PKT_STORE_SIZE(void);
 inline unsigned int FP_STORE_SIZE(void);
+inline unsigned int FP_PER_PKT(void);
+inline unsigned int FPS_FACTOR(void);
+
 
 
 // Dictionary (PacketStore and FPStore) API
@@ -207,7 +211,7 @@ void getStatistics(pDeduplicator pd, Statistics *cs);
 void resetStatistics(pDeduplicator pd);
 
 // Common initialization function
-extern void init_common(unsigned int pktStoreSize, unsigned int pktSize);
+extern void init_common(unsigned int pktStoreSize, unsigned int pktSize, unsigned int maxFpPerPkt, unsigned int fpsFactor);
 
 // Deduplicator object creation
 extern pDeduplicator newDeduplicator(void);

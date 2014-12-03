@@ -61,6 +61,8 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static unsigned int MAXPKTSIZE;
 static unsigned int PKTSTORESIZE;
 static unsigned int FPSTORESIZE;
+static unsigned int FPPERPKT;
+static unsigned int FPSFACTOR;
 
 inline void hton16(unsigned char *p, uint16_t n) {
 	*p++ = (n >> 8) & 0xff;
@@ -143,14 +145,16 @@ inline static uint64_t inc_rfp(uint64_t prev_fp, unsigned char new, unsigned cha
 // Auxiliary table for calculating fingerprints
 static uint64_t fpfactors[BYTE_RANGE][BETA];
 
-void init_common(unsigned int pktStoreSize, unsigned int pktSize) {
+void init_common(unsigned int pktStoreSize, unsigned int pktSize, unsigned int fpPerPkt, unsigned int fpsFactor) {
 
 	int i,j;
 
 	pthread_mutex_lock(&mutex);
         	MAXPKTSIZE = pktSize;
         	PKTSTORESIZE = pktStoreSize;
-        	FPSTORESIZE = (MAX_FP_PER_PKT*PKTSTORESIZE*FPS_FACTOR);
+		FPPERPKT = (fpPerPkt <= MAX_FP_PER_PKT) ? fpPerPkt : MAX_FP_PER_PKT;
+		FPSFACTOR = (fpsFactor <= MAX_FPS_FACTOR) ? fpsFactor : MAX_FPS_FACTOR;
+        	FPSTORESIZE = (fpPerPkt*PKTSTORESIZE*fpsFactor);
 
         	// Initialize auxiliary table for calculating fingerprints
         	for (i=0; i<BYTE_RANGE; i++) {
@@ -166,6 +170,8 @@ void init_common(unsigned int pktStoreSize, unsigned int pktSize) {
 inline unsigned int MAX_PKT_SIZE(void) {return MAXPKTSIZE;}
 inline unsigned int PKT_STORE_SIZE(void) {return PKTSTORESIZE;}
 inline unsigned int FP_STORE_SIZE(void) {return FPSTORESIZE;}
+inline unsigned int FP_PER_PKT(void) {return FPPERPKT;}
+inline unsigned int FPS_FACTOR(void) {return FPSFACTOR;}
 
 unsigned int calculateRelevantFPs(FPEntryB *pktFps, unsigned char *packet, uint16_t pktlen) {
 
@@ -195,13 +201,13 @@ unsigned int calculateRelevantFPs(FPEntryB *pktFps, unsigned char *packet, uint1
                         fpNum++;
                 }
                 if (++exploring >= pktlen) {
-                        if ((fpNum < MAX_FP_PER_PKT) && (iter < MAX_ITER)) {
+                        if ((fpNum < FP_PER_PKT()) && (iter < MAX_ITER)) {
                                 tentativeFP = pktFps[0].fp;
                                 previous = exploring = BETA;
                                 selectFPmask = selectFPmask << 1;
                                 iter++;
                         } else endLoop = 1;
-                } else endLoop = (fpNum == MAX_FP_PER_PKT);
+                } else endLoop = (fpNum == FP_PER_PKT());
         }
         return fpNum;
 }

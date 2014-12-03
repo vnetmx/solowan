@@ -94,6 +94,8 @@
 #define PACKET_SIZE 1500
 #define PACKET_NUMBER 131072
 #define DEF_THR_NUM 1
+#define DEF_FP_PER_PKT 32
+#define DEF_FPS_FACTOR 4
 
 //#ifndef BASIC
 //#define BASIC
@@ -125,6 +127,7 @@ int main(int argc, char *argv[]) {
 	char path[100] = "/etc/opennop/opennop.conf";
 	int tmp;
 	__u32 packet_size = PACKET_SIZE, packet_number = PACKET_NUMBER, thr_num = DEF_THR_NUM;
+        __u32 fpPerPkt = DEF_FP_PER_PKT, fpsFactor = DEF_FPS_FACTOR;
 
 #if defined(DEBUG)
 
@@ -168,7 +171,7 @@ int main(int argc, char *argv[]) {
 	sprintf(message, "Configuring: reading file %s.\n", path);
 	logger(LOG_INFO, message);
 
-	tmp = configure(path, &localID, &packet_number, &packet_size, &thr_num);
+	tmp = configure(path, &localID, &packet_number, &packet_size, &thr_num, &fpPerPkt, &fpsFactor);
 
 	if(tmp == 1){
 		sprintf(message, "Configuring error. EXIT\n");
@@ -283,7 +286,7 @@ int main(int argc, char *argv[]) {
 	}
 
 #ifdef ROLLING
-	init_common(packet_number,packet_size);
+	init_common(packet_number,packet_size, fpPerPkt, fpsFactor);
 	init_debugd() ;
 #endif
 

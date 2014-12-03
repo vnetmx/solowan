@@ -48,6 +48,6 @@
  * Receives he path of the configuration file and configures
  * optimization parameters. The default path is /etc/opennop/opennop.conf
  */
-int configure(char *path, __u32 *localID, __u32 *packet_number, __u32 *packet_size, __u32 *thr_num);
+int configure(char *path, __u32 *localID, __u32 *packet_number, __u32 *packet_size, __u32 *thr_num, __u32 *fpPerPkt, __u32 *fpsFactor);
 
 #endif /* CONFIGURE_H_ */

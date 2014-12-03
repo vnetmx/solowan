@@ -56,7 +56,7 @@ unsigned round_down_to_power_of_2(unsigned x) {
   return 0x80000000u >> __builtin_clz(x);
 }
 
-int configure(char *path, __u32 *localID, __u32 *packet_number, __u32 *packet_size, __u32 *thr_num){
+int configure(char *path, __u32 *localID, __u32 *packet_number, __u32 *packet_size, __u32 *thr_num, __u32 *fpPerPkt, __u32 *fpsFactor){
 
 	FILE *config_fp ;
 	char line[MAX_LINE_LEN + 1] ;
@@ -151,7 +151,36 @@ int configure(char *path, __u32 *localID, __u32 *packet_number, __u32 *packet_si
 						logger(LOG_INFO, message);
 					}
 
-				}else if (strcmp(token, "num_pkt_cache_size") == 0){
+				}
+				else if (strcmp(token, "fp_per_pkt") == 0){
+					token = strtok( NULL, "\t =\n\r");
+					sscanf(token, "%u", fpPerPkt);
+					if(*fpPerPkt>0){
+						sprintf(message, "%u\n", *fpPerPkt);
+						logger(LOG_INFO, message);
+						sprintf(message, "Number of FP per packet %u\n", *fpPerPkt);
+						logger(LOG_INFO, message);
+					}else{
+						sprintf(message, "Initialization: wrong number of FP per packet: %s %u\n", token, *fpPerPkt);
+						logger(LOG_INFO, message);
+					}
+
+				}
+				else if (strcmp(token, "fps_factor") == 0){
+					token = strtok( NULL, "\t =\n\r");
+					sscanf(token, "%u", fpsFactor);
+					if(*fpsFactor>0){
+						sprintf(message, "%u\n", *fpsFactor);
+						logger(LOG_INFO, message);
+						sprintf(message, "FP hash table factor %u\n", *fpsFactor);
+						logger(LOG_INFO, message);
+					}else{
+						sprintf(message, "Initialization: wrong number of FP hash table factor: %s %u\n", token, *fpsFactor);
+						logger(LOG_INFO, message);
+					}
+
+				}
+				else if (strcmp(token, "num_pkt_cache_size") == 0){
 					token = strtok( NULL, "\t =\n\r");
 					sscanf(token, "%u", &num_pkts);
 					if(num_pkts>0){
